@@ -26,8 +26,6 @@ class StatusUpdate(BaseModel):
     assignee: str = ""
     result: str = ""
 
-# --- РОУТЫ СТРАНИЦ ДЛЯ ПОЛЬЗОВАТЕЛЯ И АДМИНА ---
-
 @app.get("/")
 def read_index():
     return FileResponse("index.html")
@@ -36,11 +34,11 @@ def read_index():
 def read_admin():
     return FileResponse("admin.html")
 
-# --- ГЕНЕРАЦИЯ QR-КОДОВ (Ваша Роль 4) ---
+ # qr код генерация
 @app.get("/api/qr")
 def generate_qr(cabinet: str):
-    # При сканировании перенаправляем на форму с параметром кабинета
-    target_url = f"https://ref-murray-democratic-thesaurus.trycloudflare.com/?cabinet={cabinet}"
+    #  сканировании перенаправляем на форму с параметром кабинета
+    target_url = f"https://upk-dgu-assistant.onrender.com/?cabinet={cabinet}"
     
     qr = qrcode.QRCode(version=1, box_size=10, border=4)
     qr.add_data(target_url)
@@ -52,7 +50,7 @@ def generate_qr(cabinet: str):
     buf.seek(0)
     return StreamingResponse(buf, media_type="image/png")
 
-# --- API ДЛЯ РАБОТЫ С ЗАЯВКАМИ ---
+# Апи для работы с заявками
 
 @app.post("/api/tickets")
 def create_ticket(payload: TicketCreate):
