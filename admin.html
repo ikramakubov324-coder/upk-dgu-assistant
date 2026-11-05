@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления УПК</title>
+    <script src="https://tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen">
+
+    <nav class="bg-gray-800 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-lg font-bold">Панель УПК: Диспетчер заявок</h1>
+        <button onclick="loadTickets()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition">Обновить данные</button>
+    </nav>
+
+    <main class="p-6 max-w-6xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm font-semibold">
+                        <th class="p-4">ID</th>
+                        <th class="p-4 w-1/3">Описание проблемы</th>
+                        <th class="p-4">Решение ИИ</th>
+                        <th class="p-4">Статус</th>
+                        <th class="p-4">Исполнитель</th>
+                        <th class="p-4">Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketsTable" class="divide-y divide-gray-100 text-sm text-gray-700">
+                    <!-- Заявки загружаются сюда динамически -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        async function loadTickets() {
+            try {
+                const response = await fetch('/api/tickets');
+                const tickets = await response.json();
+                const tableBody = document.getElementById('ticketsTable');
+                tableBody.innerHTML = '';
+
+                if (tickets.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">Заявок пока нет</td></tr>`;
+                    return;
+                }
+
+                tickets.forEach(ticket => {
+                    const statusColors = {
+                        "Новая": "bg-blue-100 text-blue-800",
+                        "В работе": "bg-amber-100 text-amber-800",
+                        "Выполнено": "bg-emerald-100 text-emerald-800",
+                        "Закрыто ИИ": "bg-gray-100 text-gray-600"
+                    };
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-50 transition";
+                    tr.innerHTML = `
+                        <td class="p-4 font-mono font-bold text-gray-500">${ticket.id}</td>
+                        <td class="p-4 font-medium">${ticket.description}</td>
+                        <td class="p-4 text-xs text-gray-500 italic">${ticket.ai_response}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${statusColors[ticket.status] || 'bg-gray-100'}">
+                                ${ticket.status}
+                            </span>
+                        </td>
+                        <td class="p-4 text-gray-600 font-medium">${ticket.assignee}</td>
+                        <td class="p-4 space-y-1">
+                            ${ticket.ai_action === 'create_ticket' ? `
+                                <button onclick="processTicket('${ticket.id}', 'В работе', 'Мастер Иванов')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-2 py-1 rounded mr-1">В работу</button>
+                                <button onclick="processTicket('${ticket.id}', 'Выполнено', '', 'Успешно устранено')" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-2 py-1 rounded">Готово</button>
+                            ` : '<span class="text-xs text-gray-400">Архив</span>'}
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Ошибка загрузки заявок", error);
+            }
+        }
+
+        async function processTicket(id, status, assignee = "", result = "") {
+            await fetch(`/api/tickets/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status, assignee, result })
+            });
+            loadTickets();
+        }
+
+        window.onload = loadTickets;
+    </script>
+</body>
+</html>

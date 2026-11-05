@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>УПК: Цифровой помощник Колледжа ДГУ (г. Махачкала)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: 'var(--color-brand-50, #eff6ff)',
+                            100: 'var(--color-brand-100, #dbeafe)',
+                            500: 'var(--color-brand-500, #1d4ed8)',
+                            600: 'var(--color-brand-600, #1e40af)',
+                            700: 'var(--color-brand-700, #1e3a8a)',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Dynamic CSS Variables for Theme Customization */
+        :root {
+            --color-brand-50: #eff6ff;
+            --color-brand-100: #dbeafe;
+            --color-brand-500: #2563eb;
+            --color-brand-600: #1d4ed8;
+            --color-brand-700: #1e40af;
+            --brand-gradient: linear-gradient(135deg, #1e40af 0%, #0284c7 100%);
+        }
+
+        .theme-emerald {
+            --color-brand-50: #ecfdf5;
+            --color-brand-100: #d1fae5;
+            --color-brand-500: #059669;
+            --color-brand-600: #047857;
+            --color-brand-700: #065f46;
+            --brand-gradient: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+        }
+
+        .theme-violet {
+            --color-brand-50: #f5f3ff;
+            --color-brand-100: #ede9fe;
+            --color-brand-500: #7c3aed;
+            --color-brand-600: #6d28d9;
+            --color-brand-700: #5b21b6;
+            --brand-gradient: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%);
+        }
+
+        .bg-brand-gradient {
+            background: var(--brand-gradient);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-full flex flex-col font-sans transition-colors duration-200">
+
+    <!-- Top Header / Bar -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-brand-gradient text-white rounded-xl shadow-md flex items-center justify-center">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-blue-950 via-brand-600 to-slate-900 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">УПК Колледжа ДГУ</h1>
+                            <span class="text-[11px] px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-brand-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900">Махачкала</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Помощник управления инфраструктурой ДГУ</p>
+                    </div>
+                </div>
+
+                <!-- Controls: Role Switcher & Theme Picker -->
+                <div class="flex items-center gap-3">
+                    
+                    <!-- Role Switcher Pill -->
+                    <div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex items-center border border-slate-200 dark:border-slate-700">
+                        <button onclick="switchRole('user')" id="role-btn-user" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-white">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                            <span class="hidden sm:inline">Студент / Преподаватель</span>
+                            <span class="sm:hidden">Заявитель</span>
+                        </button>
+                        <button onclick="switchRole('staff')" id="role-btn-staff" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            <span class="hidden sm:inline">Панель УПК ДГУ</span>
+                            <span class="sm:hidden">УПК</span>
+                            <span id="staff-pending-badge" class="ml-1 bg-amber-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">2</span>
+                        </button>
+                    </div>
+
+                    <!-- Theme Menu Button -->
+                    <div class="relative">
+                        <button id="theme-btn" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Цветовая гамма">
+                            <i data-lucide="palette" class="w-5 h-5"></i>
+                        </button>
+                        
+                        <!-- Theme Dropdown -->
+                        <div id="theme-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-2xl shadow-xl ring-1 ring-slate-900/5 p-2 z-50 border border-slate-100 dark:border-slate-700 space-y-1">
+                            <div class="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Стиль оформления</div>
+                            <button onclick="setThemeScheme('indigo')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-700"></span> ДГУ Синий</span>
+                            </button>
+                            <button onclick="setThemeScheme('emerald')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-600"></span> Каспийский Изумруд</span>
+                            </button>
+                            <button onclick="setThemeScheme('violet')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-violet-600"></span> Фиолетовый</span>
+                            </button>
+                            <hr class="my-1 border-slate-100 dark:border-slate-700">
+                            <button id="toggle-dark" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <span class="flex items-center gap-2"><i data-lucide="moon" class="w-3.5 h-3.5"></i> Тёмный режим</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ==================== USER VIEW ==================== -->
+        <section id="view-user" class="space-y-6">
+            
+            <!-- QR Simulation Banner -->
+            <div class="bg-gradient-to-r from-blue-900 via-brand-600 to-sky-700 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="relative z-10 space-y-1">
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-medium text-white">
+                        <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Корпус Колледжа ДГУ
+                    </div>
+                    <h2 class="text-xl font-bold" id="current-location-text">Главный корпус (ул. Батырая, 4) — Аудитория 304</h2>
+                    <p class="text-xs text-white/80">Опишите проблему. ИИ-помощник ДГУ найдет быстрый ответ или мгновенно передаст заявку в УПК.</p>
+                </div>
+                <button onclick="openLocationModal()" class="relative z-10 px-3.5 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl text-xs font-semibold border border-white/20 transition flex items-center gap-1.5 shrink-0">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Выбрать корпус ДГУ
+                </button>
+                <div class="absolute -right-8 -bottom-10 opacity-10 pointer-events-none">
+                    <i data-lucide="building" class="w-48 h-48 text-white"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Form Side -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-700/80 space-y-5">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="file-plus-2" class="w-5 h-5 text-brand-600"></i> Подача обращения
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Укажите проблему с компьютерами, освещением, мебелью или сетью</p>
+                    </div>
+
+                    <form id="ticket-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                        
+                        <!-- Quick Category Badges -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Категория обращения</label>
+                            <div class="flex flex-wrap gap-2" id="category-badges">
+                                <button type="button" onclick="selectCategory('it')" class="cat-btn border border-brand-500 bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 transition">
+                                    <i data-lucide="monitor" class="w-3.5 h-3.5"></i> Оборудование / ПК
+                                </button>
+                                <button type="button" onclick="selectCategory('wifi')" class="cat-btn border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs px-3 py-1.5 rounded-xl font-medium flex items-center gap-1.5 transition">
+                                    <i data-lucide="wifi" class="w-3.5 h-3.5"></i> Wi-Fi / Сеть ДГУ
+                                </button>
+                                <button type="button" onclick="selectCategory('electric')" class="cat-btn border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs px-3 py-1.5 rounded-xl font-medium flex items-center gap-1.5 transition">
+                                    <i data-lucide="zap" class="w-3.5 h-3.5"></i> Электрика / Свет
+                                </button>
+                                <button type="button" onclick="selectCategory('furniture')" class="cat-btn border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs px-3 py-1.5 rounded-xl font-medium flex items-center gap-1.5 transition">
+                                    <i data-lucide="armchair" class="w-3.5 h-3.5"></i> Мебель / Инфраструктура
+                                </button>
+                            </div>
+                            <input type="hidden" id="selected-category" value="it">
+                        </div>
+
+                        <!-- Problem Description Input -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Описание ситуации</label>
+                            <textarea id="problem-desc" rows="4" required placeholder="Например: В аудитории 304 не подключается Wi-Fi ДГУ, или не включается моноблок преподавателя..." 
+                                class="w-full p-3 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition"></textarea>
+                        </div>
+
+                        <!-- Photo Attachment Simulation -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Прикрепить фото (необязательно)</label>
+                            <div class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-4 text-center hover:bg-slate-50 dark:hover:bg-slate-900/50 transition cursor-pointer relative" id="photo-drop-zone">
+                                <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)" class="absolute inset-0 opacity-0 cursor-pointer">
+                                <div id="photo-placeholder" class="space-y-1">
+                                    <i data-lucide="camera" class="w-6 h-6 mx-auto text-slate-400"></i>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Нажмите для выбора фото или снимка с камеры</p>
+                                    <p class="text-[10px] text-slate-400">PNG, JPG до 10 МБ</p>
+                                </div>
+                                <div id="photo-preview-container" class="hidden flex items-center justify-between p-2 bg-slate-100 dark:bg-slate-900 rounded-lg">
+                                    <div class="flex items-center gap-2">
+                                        <img id="photo-preview-img" src="" class="w-10 h-10 object-cover rounded-md">
+                                        <span id="photo-file-name" class="text-xs font-medium truncate max-w-[180px]">photo.jpg</span>
+                                    </div>
+                                    <button type="button" onclick="removePhoto(event)" class="text-rose-500 hover:text-rose-700 p-1">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Applicant Contact -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">ФИО / Группа (необязательно)</label>
+                                <input type="text" id="applicant-name" placeholder="Магомедов А. (Груп. 320 ПО)" class="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Телефон / Telegram</label>
+                                <input type="text" id="applicant-contact" placeholder="@dgu_student или +7..." class="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <button type="submit" id="btn-submit" class="w-full py-3 bg-brand-gradient hover:opacity-95 text-white font-semibold text-sm rounded-xl shadow-lg shadow-blue-600/25 transition flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> Отправить в УПК Колледжа ДГУ
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right Side: AI Assistant Process & Instant Feed -->
+                <div class="lg:col-span-5 space-y-4">
+                    
+                    <!-- AI Assistant Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-700/80 space-y-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-brand-600 dark:text-blue-400">
+                                <i data-lucide="bot" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-900 dark:text-white">ИИ-Консультант ДГУ</h4>
+                                <p class="text-[11px] text-slate-500">Авто-классификация и быстрые решения</p>
+                            </div>
+                        </div>
+
+                        <!-- AI Response Box -->
+                        <div id="ai-response-box" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-700 text-xs space-y-2">
+                            <div class="flex items-center gap-2 text-slate-500">
+                                <i data-lucide="info" class="w-4 h-4 text-brand-600"></i>
+                                <span>Заполните форму. Система проверит, есть ли типовой ответ (пароли Wi-Fi, дубликаты пропусков ДГУ), либо мгновенно зарегистрирует тикет сотрудникам УПК.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User's Recent Submissions Status -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-700/80">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+                            <span>Мои заявки в ДГУ</span>
+                            <span id="user-my-count" class="bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full text-slate-600 dark:text-slate-300 font-semibold text-[10px]">0</span>
+                        </h4>
+                        <div id="user-tickets-list" class="space-y-2.5">
+                            <p class="text-xs text-slate-400 text-center py-4">Вы пока не подавали заявок</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== STAFF VIEW (UPK DASHBOARD) ==================== -->
+        <section id="view-staff" class="hidden space-y-6">
+            
+            <!-- Dashboard Overview Stats Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3">
+                    <div class="p-3 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-xl">
+                        <i data-lucide="inbox" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-xl font-bold" id="stat-total">0</div>
+                        <div class="text-[11px] text-slate-500">Всего обращений ДГУ</div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3">
+                    <div class="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 rounded-xl">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-xl font-bold" id="stat-new">0</div>
+                        <div class="text-[11px] text-slate-500">Ожидают мастера</div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3">
+                    <div class="p-3 bg-indigo-50 dark:bg-indigo-950/50 text-brand-600 rounded-xl">
+                        <i data-lucide="wrench" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-xl font-bold" id="stat-progress">0</div>
+                        <div class="text-[11px] text-slate-500">В работе</div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3">
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 rounded-xl">
+                        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-xl font-bold" id="stat-done">0</div>
+                        <div class="text-[11px] text-slate-500">Успешно выполнено</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Filter & Controls -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                
+                <!-- Status Tabs -->
+                <div class="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0" id="status-filters">
+                    <button onclick="filterStaffTickets('all')" class="staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-brand-600 text-white shadow-sm">Все заявки</button>
+                    <button onclick="filterStaffTickets('new')" class="staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">Новые</button>
+                    <button onclick="filterStaffTickets('in_progress')" class="staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">В работе</button>
+                    <button onclick="filterStaffTickets('completed')" class="staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">Завершенные</button>
+                    <button onclick="filterStaffTickets('rejected')" class="staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">Отклоненные</button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative w-full sm:w-64">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="staff-search" oninput="renderStaffTickets()" placeholder="Поиск (Батырая, ПК, ID...)" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500">
+                </div>
+
+            </div>
+
+            <!-- Tickets Master Table / List Container -->
+            <div id="staff-tickets-container" class="space-y-4">
+                <!-- Populated dynamically -->
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal: Location Switcher for DGU -->
+    <div id="location-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="building-2" class="w-5 h-5 text-brand-600"></i> Корпус Колледжа ДГУ
+                </h3>
+                <button onclick="closeLocationModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Выберите корпус (Махачкала)</label>
+                    <select id="modal-building" class="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                        <option>Главный корпус (ул. Батырая, 4)</option>
+                        <option>Корпус Колледжа ДГУ (ул. Коркмасова, 8)</option>
+                        <option>Юридический / Экономический корпус (ул. Дзержинского)</option>
+                        <option>Спортивный комплекс / Библиотека ДГУ</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Этаж и Аудитория</label>
+                    <input type="text" id="modal-room" value="3 этаж, Аудитория 304 (Лаборатория ПО)" class="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                </div>
+            </div>
+
+            <button onclick="saveLocationModal()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs rounded-xl shadow-md transition">
+                Применить расположение
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs z-50 pointer-events-none">
+        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-emerald-600 shrink-0"></i>
+        <span id="toast-msg">Операция выполнена</span>
+    </div>
+
+    <script>
+        // Pre-populated Sample Data adapted for DGU
+        let tickets = [
+            {
+                id: "DGU-1042",
+                location: "Главный корпус (ул. Батырая, 4) — Ауд. 304",
+                category: "it",
+                categoryTitle: "Оборудование / ПК",
+                description: "В компьютерном классе №3 не запускается интерактивная панель и отсутствует сигнал HDMI на проекторе.",
+                photo: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=300&auto=format&fit=crop&q=60",
+                applicantName: "Гаджиев Р.А. (Преподаватель)",
+                applicantContact: "@gadzhiev_dgu",
+                status: "new",
+                statusTitle: "Новая",
+                assignedTo: "",
+                resultNote: "",
+                createdAt: "15 минут назад"
+            },
+            {
+                id: "DGU-1041",
+                location: "Корпус ул. Коркмасова, 8 — Лаборатория 201",
+                category: "wifi",
+                categoryTitle: "Wi-Fi / Сеть ДГУ",
+                description: "Низкая скорость сети Wi-Fi на 2 этаже. ПК №4 не получает IP-адрес по локальной сети.",
+                photo: null,
+                applicantName: "Магомедов И.К. (Студент)",
+                applicantContact: "+7 (988) 291-00-11",
+                status: "in_progress",
+                statusTitle: "В работе",
+                assignedTo: "Магомедов А.М. (И Т-специалист)",
+                resultNote: "Перезагружен коммутатор доступа на 2 этаже. Ведется проверка.",
+                createdAt: "1 час назад"
+            },
+            {
+                id: "DGU-1039",
+                location: "Юридический корпус (ул. Дзержинского) — Лекционный зал 1",
+                category: "electric",
+                categoryTitle: "Электрика / Свет",
+                description: "Мерцает светодиодная панель над кафедрой. Требуется замена дросселя/лампы.",
+                photo: null,
+                applicantName: "Алиева З.М. (Деканат)",
+                applicantContact: "внут. 214",
+                status: "completed",
+                statusTitle: "Завершена",
+                assignedTo: "Ибрагимов С.К. (Главный электрик)",
+                resultNote: "Заменен светильник Армстронг на новый LED-модуль.",
+                createdAt: "Вчера"
+            }
+        ];
+
+        let currentRole = 'user';
+        let currentStaffFilter = 'all';
+        let uploadedPhotoData = null;
+        let currentLocation = "Главный корпус (ул. Батырая, 4) — Аудитория 304";
+
+        // AI Rule-based Engine tailored for DGU
+        const aiKnowledgeBase = [
+            {
+                keywords: ["пароль", "вайфай", "wifi", "wi-fi", "сеть", "интернет"],
+                answer: "⚡ **ИИ-Консультант Колледжа ДГУ:**\nДля подключения к беспроводной сети в корпусах ДГУ используйте SSID: **DGU_Student** или **DGU_Guest**.\nПароль единого доступа: **DguCollege2026**\nЕсли у вас нет доступа к локальным ресурсам — обратитесь в отдел информатизации (Батырая, 4, каб. 102).",
+                isInstant: true
+            },
+            {
+                keywords: ["пропуск", "турникет", "карточка", "бюро пропусков"],
+                answer: "⚡ **ИИ-Подсказка ДГУ:**\nВосстановление студенческого электронного пропуска производится в бюро пропусков ДГУ (Главный корпус, 1 этаж у входа). При себе иметь студенческий билет.",
+                isInstant: true
+            },
+            {
+                keywords: ["библиотека", "книги", "эбс"],
+                answer: "⚡ **ИИ-Подсказка:**\nДоступ к Электронной библиотечной системе (ЭБС ДГУ) предоставляется по логину портала ДГУ. Забыли пароль? Восстановите его в каб. 205 (Библиотечный корпус).",
+                isInstant: true
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateStats();
+            renderUserTickets();
+
+            const themeBtn = document.getElementById('theme-btn');
+            const themeDropdown = document.getElementById('theme-dropdown');
+            themeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                themeDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => themeDropdown.classList.add('hidden'));
+
+            document.getElementById('toggle-dark').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+        });
+
+        function switchRole(role) {
+            currentRole = role;
+            const userView = document.getElementById('view-user');
+            const staffView = document.getElementById('view-staff');
+            const userBtn = document.getElementById('role-btn-user');
+            const staffBtn = document.getElementById('role-btn-staff');
+
+            if (role === 'user') {
+                userView.classList.remove('hidden');
+                staffView.classList.add('hidden');
+                userBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-white";
+                staffBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+            } else {
+                userView.classList.add('hidden');
+                staffView.classList.remove('hidden');
+                staffBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-white";
+                userBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                renderStaffTickets();
+            }
+        }
+
+        function setThemeScheme(scheme) {
+            document.body.classList.remove('theme-emerald', 'theme-violet');
+            if (scheme === 'emerald') document.body.classList.add('theme-emerald');
+            if (scheme === 'violet') document.body.classList.add('theme-violet');
+            showToast(`Установлена тема: ${scheme}`);
+        }
+
+        function selectCategory(cat) {
+            document.getElementById('selected-category').value = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs px-3 py-1.5 rounded-xl font-medium flex items-center gap-1.5 transition";
+            });
+            event.currentTarget.className = "cat-btn border border-brand-500 bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 transition";
+        }
+
+        function handlePhotoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedPhotoData = event.target.result;
+                document.getElementById('photo-placeholder').classList.add('hidden');
+                document.getElementById('photo-preview-container').classList.remove('hidden');
+                document.getElementById('photo-preview-img').src = uploadedPhotoData;
+                document.getElementById('photo-file-name').textContent = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePhoto(e) {
+            if (e) e.stopPropagation();
+            uploadedPhotoData = null;
+            document.getElementById('photo-input').value = '';
+            document.getElementById('photo-placeholder').classList.remove('hidden');
+            document.getElementById('photo-preview-container').classList.add('hidden');
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const desc = document.getElementById('problem-desc').value.trim();
+            const category = document.getElementById('selected-category').value;
+            const applicantName = document.getElementById('applicant-name').value.trim() || "Студент ДГУ";
+            const applicantContact = document.getElementById('applicant-contact').value.trim() || "Не указан";
+            
+            if (!desc) return;
+
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Обработка ИИ ДГУ...`;
+            lucide.createIcons();
+
+            setTimeout(() => {
+                const textLower = desc.toLowerCase();
+                let matchedInstant = aiKnowledgeBase.find(kb => kb.keywords.some(kw => textLower.includes(kw)));
+                const aiBox = document.getElementById('ai-response-box');
+
+                if (matchedInstant) {
+                    aiBox.innerHTML = `
+                        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl space-y-2">
+                            <div class="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i> Готовый ответ ИИ-Консультанта
+                            </div>
+                            <div class="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">${matchedInstant.answer}</div>
+                        </div>
+                    `;
+                    showToast("ИИ выдал готовое решение ДГУ!");
+                } else {
+                    const newId = `DGU-${Math.floor(1000 + Math.random() * 9000)}`;
+                    const categoryTitles = {
+                        it: "Оборудование / ПК",
+                        wifi: "Wi-Fi / Сеть ДГУ",
+                        electric: "Электрика / Свет",
+                        furniture: "Мебель / Инфраструктура"
+                    };
+
+                    const newTicket = {
+                        id: newId,
+                        location: currentLocation,
+                        category: category,
+                        categoryTitle: categoryTitles[category] || "Общее",
+                        description: desc,
+                        photo: uploadedPhotoData,
+                        applicantName: applicantName,
+                        applicantContact: applicantContact,
+                        status: "new",
+                        statusTitle: "Новая",
+                        assignedTo: "",
+                        resultNote: "",
+                        createdAt: "Только что"
+                    };
+
+                    tickets.unshift(newTicket);
+
+                    aiBox.innerHTML = `
+                        <div class="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl space-y-2">
+                            <div class="font-bold text-brand-600 dark:text-blue-400 flex items-center gap-1.5">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Заявка ${newId} передана в УПК ДГУ
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300">Категория: <strong>«${categoryTitles[category]}»</strong>. Ответственный сотрудник свяжется с вами при необходимости.</p>
+                        </div>
+                    `;
+
+                    document.getElementById('ticket-form').reset();
+                    removePhoto(null);
+                    updateStats();
+                    renderUserTickets();
+                    showToast(`Заявка ${newId} зарегистрирована в УПК ДГУ`);
+                }
+
+                btnSubmit.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i> Отправить в УПК Колледжа ДГУ`;
+                lucide.createIcons();
+            }, 600);
+        }
+
+        function renderUserTickets() {
+            const container = document.getElementById('user-tickets-list');
+            document.getElementById('user-my-count').textContent = tickets.length;
+
+            if (tickets.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Вы пока не подавали заявок</p>`;
+                return;
+            }
+
+            container.innerHTML = tickets.map(t => {
+                const statusColors = {
+                    new: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400",
+                    in_progress: "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400",
+                    completed: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400",
+                    rejected: "bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400"
+                };
+
+                return `
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60 space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-xs text-brand-600 dark:text-blue-400">${t.id}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${statusColors[t.status]}">${t.statusTitle}</span>
+                        </div>
+                        <p class="text-xs text-slate-700 dark:text-slate-300 font-medium line-clamp-1">${t.description}</p>
+                        <div class="text-[10px] text-slate-400 flex items-center justify-between">
+                            <span class="truncate max-w-[200px]">${t.location}</span>
+                            <span>${t.createdAt}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderStaffTickets() {
+            const container = document.getElementById('staff-tickets-container');
+            const searchQuery = document.getElementById('staff-search').value.toLowerCase();
+
+            let filtered = tickets.filter(t => {
+                const matchesFilter = currentStaffFilter === 'all' || t.status === currentStaffFilter;
+                const matchesSearch = !searchQuery || 
+                    t.id.toLowerCase().includes(searchQuery) ||
+                    t.location.toLowerCase().includes(searchQuery) ||
+                    t.description.toLowerCase().includes(searchQuery);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <i data-lucide="inbox" class="w-10 h-10 mx-auto text-slate-400 mb-2"></i>
+                        <p class="text-sm font-medium text-slate-500">Заявок не обнаружено</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = filtered.map(t => {
+                const statusBadge = {
+                    new: `<span class="bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400 px-2.5 py-1 rounded-full text-xs font-semibold">Новая</span>`,
+                    in_progress: `<span class="bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400 px-2.5 py-1 rounded-full text-xs font-semibold">В работе</span>`,
+                    completed: `<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 px-2.5 py-1 rounded-full text-xs font-semibold">Завершена</span>`,
+                    rejected: `<span class="bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 px-2.5 py-1 rounded-full text-xs font-semibold">Отклонена</span>`
+                }[t.status];
+
+                return `
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-700/80 space-y-4">
+                        
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700/60 pb-3">
+                            <div class="flex items-center gap-3">
+                                <span class="font-extrabold text-sm text-slate-900 dark:text-white">${t.id}</span>
+                                <span class="text-xs px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium">${t.categoryTitle}</span>
+                                ${statusBadge}
+                            </div>
+                            <span class="text-xs text-slate-400 flex items-center gap-1">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${t.createdAt}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <div class="${t.photo ? 'md:col-span-8' : 'md:col-span-12'} space-y-2">
+                                <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-600"></i> ${t.location}
+                                </div>
+                                <p class="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">${t.description}</p>
+                                <div class="text-xs text-slate-500 flex flex-wrap items-center gap-4 pt-1">
+                                    <span><strong>Заявитель:</strong> ${t.applicantName}</span>
+                                    <span><strong>Контакт:</strong> ${t.applicantContact}</span>
+                                </div>
+                            </div>
+                            ${t.photo ? `
+                                <div class="md:col-span-4">
+                                    <img src="${t.photo}" class="w-full h-28 object-cover rounded-xl border border-slate-200 dark:border-slate-700" alt="Фото проблемы">
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Staff Action Controls Bar -->
+                        <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/40 -mx-5 -mb-5 p-4 rounded-b-2xl flex flex-wrap items-center justify-between gap-3">
+                            
+                            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Исполнитель ДГУ</label>
+                                    <select onchange="assignStaff('${t.id}', this.value)" class="text-xs p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none">
+                                        <option value="" ${!t.assignedTo ? 'selected' : ''}>-- Выберите исполнителя --</option>
+                                        <option value="Магомедов А.М. (ИТ-специалист)" ${t.assignedTo.includes('Магомедов') ? 'selected' : ''}>Магомедов А.М. (ИТ)</option>
+                                        <option value="Гаджиев Р.И. (Техник УПК)" ${t.assignedTo.includes('Гаджиев') ? 'selected' : ''}>Гаджиев Р.И. (Техник)</option>
+                                        <option value="Ибрагимов С.К. (Главный Электрик)" ${t.assignedTo.includes('Ибрагимов') ? 'selected' : ''}>Ибрагимов С.К. (Электрик)</option>
+                                        <option value="Алиева З.М. (Завхоз ДГУ)" ${t.assignedTo.includes('Алиева') ? 'selected' : ''}>Алиева З.М. (Завхоз)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Статус заявки</label>
+                                    <select onchange="updateTicketStatus('${t.id}', this.value)" class="text-xs p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none">
+                                        <option value="new" ${t.status === 'new' ? 'selected' : ''}>Новая</option>
+                                        <option value="in_progress" ${t.status === 'in_progress' ? 'selected' : ''}>В работе</option>
+                                        <option value="completed" ${t.status === 'completed' ? 'selected' : ''}>Завершена</option>
+                                        <option value="rejected" ${t.status === 'rejected' ? 'selected' : ''}>Отклонена</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button onclick="promptResultNote('${t.id}')" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
+                                <i data-lucide="check-square" class="w-3.5 h-3.5 text-brand-600"></i>
+                                <span>${t.resultNote ? 'Изм. отчет' : 'Фиксация результата'}</span>
+                            </button>
+
+                        </div>
+
+                        ${t.resultNote ? `
+                            <div class="mt-2 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                                <div><strong>Отчет УПК:</strong> ${t.resultNote}</div>
+                            </div>
+                        ` : ''}
+
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function filterStaffTickets(status) {
+            currentStaffFilter = status;
+            document.querySelectorAll('.staff-filter-btn').forEach(btn => {
+                btn.className = "staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700";
+            });
+            event.currentTarget.className = "staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-brand-600 text-white shadow-sm";
+            renderStaffTickets();
+        }
+
+        function assignStaff(id, staffName) {
+            let t = tickets.find(x => x.id === id);
+            if (t) {
+                t.assignedTo = staffName;
+                if (t.status === 'new' && staffName) {
+                    t.status = 'in_progress';
+                    t.statusTitle = 'В работе';
+                }
+                updateStats();
+                renderStaffTickets();
+                showToast(`Назначен исполнитель: ${staffName}`);
+            }
+        }
+
+        function updateTicketStatus(id, newStatus) {
+            let t = tickets.find(x => x.id === id);
+            if (t) {
+                t.status = newStatus;
+                const titles = { new: "Новая", in_progress: "В работе", completed: "Завершена", rejected: "Отклонена" };
+                t.statusTitle = titles[newStatus];
+                updateStats();
+                renderStaffTickets();
+                renderUserTickets();
+                showToast(`Статус ${id} изменен на "${t.statusTitle}"`);
+            }
+        }
+
+        function promptResultNote(id) {
+            let t = tickets.find(x => x.id === id);
+            if (t) {
+                const note = prompt("Введите результат / отчет о выполненных работах:", t.resultNote || "");
+                if (note !== null) {
+                    t.resultNote = note.trim();
+                    if (t.resultNote && t.status !== 'completed') {
+                        t.status = 'completed';
+                        t.statusTitle = 'Завершена';
+                    }
+                    updateStats();
+                    renderStaffTickets();
+                    showToast(`Отчет по заявке ${id} сохранен`);
+                }
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = tickets.length;
+            document.getElementById('stat-new').textContent = tickets.filter(t => t.status === 'new').length;
+            document.getElementById('stat-progress').textContent = tickets.filter(t => t.status === 'in_progress').length;
+            document.getElementById('stat-done').textContent = tickets.filter(t => t.status === 'completed').length;
+            document.getElementById('staff-pending-badge').textContent = tickets.filter(t => t.status === 'new').length;
+        }
+
+        function openLocationModal() {
+            document.getElementById('location-modal').classList.remove('hidden');
+        }
+        function closeLocationModal() {
+            document.getElementById('location-modal').classList.add('hidden');
+        }
+        function saveLocationModal() {
+            const b = document.getElementById('modal-building').value;
+            const r = document.getElementById('modal-room').value;
+            currentLocation = `${b} — ${r}`;
+            document.getElementById('current-location-text').textContent = currentLocation;
+            closeLocationModal();
+            showToast("Корпус ДГУ обновлен!");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
